@@ -1,0 +1,10 @@
+- name: update all
+  hosts: all
+  become: true 
+  tasks:
+    - name: apt update
+      ansible.builtin.apt:
+        update_cache: yes
+    - name: apt upgrade
+      ansible.builtin.apt:
+        upgrade: safe
