@@ -12,7 +12,7 @@
   hosts: raspberry
   become: true 
   tasks:
-  
+
 # making sure the system is up to date
     - name: apt update
       ansible.builtin.apt:
@@ -57,111 +57,7 @@
       ansible.builtin.systemd_service:
         state: restarted
         name: sshd
-
-# configure ufw ports
-    - name: deny other ufw ports
-      community.general.ufw:
-        default: deny
-
-    - name: allow ssh for port 2222 | local
-      community.general.ufw:
-        rule: allow
-        port: '2222'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow wireguard vpn 51820
-      community.general.ufw:
-        rule: allow
-        port: '51820'
-        proto: udp
-
-    - name: allow nginx port 80 | local
-      community.general.ufw:
-        rule: allow
-        port: '80'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow nextcloud port 8080 | local
-      community.general.ufw:
-        rule: allow
-        port: '8080'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow ente museum port 8083 | local
-      community.general.ufw:
-        rule: allow
-        port: '8083'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow ente web ports 3101-3107 | local
-      community.general.ufw:
-        rule: allow
-        port: '3101:3107'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow ntfy port 8090 | local
-      community.general.ufw:
-        rule: allow
-        port: '8090'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow onlyoffice port 8081 | local
-      community.general.ufw:
-        rule: allow
-        port: '8081'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow onlyoffice port 8443 | local
-      community.general.ufw:
-        rule: allow
-        port: '8443'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow portainer port 9443 | local
-      community.general.ufw:
-        rule: allow
-        port: '9443'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow portainer port 8000 | local
-      community.general.ufw:
-        rule: allow
-        port: '8000'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow uptime kuma port 4500 | local
-      community.general.ufw:
-        rule: allow
-        port: '4500'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow minio port 3200 | local
-      community.general.ufw:
-        rule: allow
-        port: '3200'
-        src: 192.168.178.0/24
-        proto: tcp
-
-    - name: allow all from vpn network
-      community.general.ufw:
-        rule: allow
-        src: 10.8.0.0/24
-
-    - name: enable ufw
-      community.general.ufw:
-        state: enabled
-
+        
 # setup fail2ban
     - name: Copy config file
       ansible.builtin.copy:
@@ -213,70 +109,10 @@
         state: started
         name: wg-quick@wg0
 
+# configure ufw
+    - name: configure ufw
+      ansible.builtin.include_tasks: ../tasks/ufw.yml
+
 # install docker
-    - name: install ca-certificate and curl
-      ansible.builtin.apt:
-        pkg:
-        - ca-certificates
-        - curl
-
-    - name: create folder for keyring
-      ansible.builtin.file:
-        path: /etc/apt/keyrings
-        state: directory
-        mode: '0755'
-        owner: root
-        group: root
-
-    - name: install gpg key
-      ansible.builtin.get_url:
-        url: https://download.docker.com/linux/debian/gpg
-        dest: /etc/apt/keyrings/docker.asc
-        mode: '0644'
-
-    - name: add docker repository
-      ansible.builtin.copy:
-        content: |
-          Types: deb
-          URIs: https://download.docker.com/linux/debian
-          Suites: bookworm
-          Components: stable
-          Architectures: arm64
-          Signed-By: /etc/apt/keyrings/docker.asc
-        dest: /etc/apt/sources.list.d/docker.sources
-
-    - name: apt update after adding docker repo
-      ansible.builtin.apt:
-        update_cache: yes
-
-    - name: install docker packages
-      ansible.builtin.apt:
-        pkg:
-        - docker-ce
-        - docker-ce-cli
-        - containerd.io
-        - docker-buildx-plugin
-        - docker-compose-plugin
-
-    - name: enable and start docker
-      ansible.builtin.systemd_service:
-        name: docker
-        state: started
-        enabled: true
-
-    - name: add pi user to docker group
-      ansible.builtin.user:
-        name: pi
-        groups: docker
-        append: yes
-
-    - name: verify docker with hello-world
-      ansible.builtin.command:
-        cmd: docker run hello-world
-      register: hello_world_output
-      changed_when: false
-
-    - name: show hello-world output
-      ansible.builtin.debug:
-        var: hello_world_output.stdout
-    
+    - name: install docker
+      ansible.builtin.include_tasks: ../tasks/docker-install-arm64.yml
