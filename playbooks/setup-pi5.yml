@@ -115,3 +115,7 @@
 # install docker
     - name: install docker
       ansible.builtin.include_tasks: ../tasks/docker-install-arm64.yml
+
+# deploy containers
+    - name: deploy containers
+      ansible.builtin.include_tasks: ../tasks/docker-containers.yml
