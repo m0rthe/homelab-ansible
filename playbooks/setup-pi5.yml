@@ -1,7 +1,8 @@
-# intial ssh setup
+# initial ssh setup
 - name: initial ssh setup
   hosts: raspberry
   become: true
+  ignore_unreachable: true
   vars:
     ansible_port: 22
   tasks:
@@ -57,7 +58,7 @@
 # setup fail2ban
     - name: Copy config file
       ansible.builtin.copy:
-        src: files/jail.local
+        src: ../files/jail.local
         dest: /etc/fail2ban/jail.local
         owner: root
         group: root
@@ -75,12 +76,14 @@
         state: stopped
         name: bluetooth
         enabled: false
+      ignore_errors: true
 
     - name: stop modemmanager
       ansible.builtin.systemd_service:
         state: stopped
         name: ModemManager
         enabled: false
+      ignore_errors: true
 
     - name: disable node_exporter if present
       ansible.builtin.systemd_service:
