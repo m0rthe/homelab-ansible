@@ -1,16 +1,39 @@
-#### order ####
-# apt update + upgrade
-# Pakete installieren – nginx, fail2ban, ufw, wireguard
-# SSH absichern – Port 2222, Passwort-Login deaktivieren, Key hinterlegen
-# UFW konfigurieren – Ports freigeben
-# Fail2Ban konfigurieren
-# Unnötige Dienste deaktivieren – bluetooth, ModemManager, node_exporter
-# WireGuard konfigurieren
-# Docker installieren
+# intial ssh setup
+- name: initial ssh setup
+  hosts: raspberry
+  become: true
+  vars:
+    ansible_port: 22
+  tasks:
 
+    - name: Set authorized key taken from file
+      ansible.posix.authorized_key:
+        user: pi
+        state: present
+        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+
+    - name: disable password authentication
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication no'
+
+    - name: change ssh port
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Port'
+        line: 'Port 2222'
+
+    - name: restart sshd
+      ansible.builtin.systemd_service:
+        state: restarted
+        name: sshd
+
+
+# main setup
 - name: setup pi5
   hosts: raspberry
-  become: true 
+  become: true
   tasks:
 
 # making sure the system is up to date
@@ -31,33 +54,6 @@
         - ufw
         - wireguard
 
-# copy local ssh pub key onto server
-    - name: Set authorized key taken from file
-      ansible.posix.authorized_key:
-        user: pi
-        state: present
-        key: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
-
-# disable password auth and activate ssh
-    - name: disable password authentication
-      ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^#?PasswordAuthentication'
-        line: 'PasswordAuthentication no'
-
-# change ssh port
-    - name: change ssh port
-      ansible.builtin.lineinfile:
-        path: /etc/ssh/sshd_config
-        regexp: '^#?Port'
-        line: 'Port 2222'
-
-# restart the systemd service and make sure it's running
-    - name: Restarting sshd
-      ansible.builtin.systemd_service:
-        state: restarted
-        name: sshd
-        
 # setup fail2ban
     - name: Copy config file
       ansible.builtin.copy:
@@ -73,13 +69,13 @@
         state: restarted
         name: fail2ban
 
-# deactivate not needed services 
+# deactivate not needed services
     - name: stop bluetooth
       ansible.builtin.systemd_service:
         state: stopped
         name: bluetooth
         enabled: false
-        
+
     - name: stop modemmanager
       ansible.builtin.systemd_service:
         state: stopped

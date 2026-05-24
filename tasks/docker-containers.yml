@@ -1,0 +1,168 @@
+# create docker directories
+- name: create nextcloud directory
+  ansible.builtin.file:
+    path: /home/pi/docker/nextcloud
+    state: directory
+    owner: pi
+    group: pi
+    mode: '0755'
+
+- name: create ntfy directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: pi
+    group: pi
+    mode: '0755'
+  loop:
+    - /home/pi/docker/ntfy
+    - /home/pi/docker/ntfy/cache
+    - /home/pi/docker/ntfy/config
+
+- name: create onlyoffice directory
+  ansible.builtin.file:
+    path: /home/pi/docker/onlyoffice/Docker-DocumentServer-Arm64
+    state: directory
+    owner: pi
+    group: pi
+    mode: '0755'
+
+- name: create uptime-kuma directory
+  ansible.builtin.file:
+    path: /home/pi/docker/uptime-kuma
+    state: directory
+    owner: pi
+    group: pi
+    mode: '0755'
+
+# copy compose files
+- name: copy nextcloud compose file
+  ansible.builtin.template:
+    src: ../files/compose/nextcloud.yml
+    dest: /home/pi/docker/nextcloud/docker-compose.yml
+    owner: pi
+    group: pi
+    mode: '0644'
+
+- name: copy ntfy compose file
+  ansible.builtin.copy:
+    src: ../files/compose/ntfy.yml
+    dest: /home/pi/docker/ntfy/docker-compose.yml
+    owner: pi
+    group: pi
+    mode: '0644'
+
+- name: copy onlyoffice compose file
+  ansible.builtin.template:
+    src: ../files/compose/onlyoffice.yml
+    dest: /home/pi/docker/onlyoffice/Docker-DocumentServer-Arm64/docker-compose.yml
+    owner: pi
+    group: pi
+    mode: '0644'
+
+- name: copy uptime-kuma compose file
+  ansible.builtin.copy:
+    src: ../files/compose/uptime-kuma.yml
+    dest: /home/pi/docker/uptime-kuma/compose.yaml
+    owner: pi
+    group: pi
+    mode: '0644'
+
+# deploy portainer
+- name: create portainer volume
+  community.docker.docker_volume:
+    name: portainer_data
+
+- name: deploy portainer
+  community.docker.docker_container:
+    name: portainer
+    image: portainer/portainer-ce:lts
+    restart_policy: always
+    ports:
+      - "192.168.178.144:8000:8000"
+      - "192.168.178.144:9443:9443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer_data:/data
+
+# start containers with docker compose
+- name: start nextcloud
+  community.docker.docker_compose_v2:
+    project_src: /home/pi/docker/nextcloud
+    files:
+      - docker-compose.yml
+    state: present
+
+- name: start ntfy
+  community.docker.docker_compose_v2:
+    project_src: /home/pi/docker/ntfy
+    files:
+      - docker-compose.yml
+    state: present
+
+- name: start onlyoffice
+  community.docker.docker_compose_v2:
+    project_src: /home/pi/docker/onlyoffice/Docker-DocumentServer-Arm64
+    files:
+      - docker-compose.yml
+    state: present
+
+# deploy ente first, creates config_default network needed by uptime-kuma
+- name: install git
+  ansible.builtin.apt:
+    name: git
+    state: present
+
+- name: clone ente repository
+  ansible.builtin.git:
+    repo: https://github.com/ente-io/ente.git
+    dest: /home/pi/docker/ente
+    version: main
+    update: false
+
+- name: copy ente compose file
+  ansible.builtin.copy:
+    src: ../files/compose/ente.yml
+    dest: /home/pi/docker/ente/server/config/compose.yaml
+    owner: pi
+    group: pi
+    mode: '0644'
+
+- name: copy ente .env file
+  ansible.builtin.template:
+    src: ../files/compose/ente.env
+    dest: /home/pi/docker/ente/server/config/.env
+    owner: pi
+    group: pi
+    mode: '0600'
+
+- name: copy museum.yaml
+  ansible.builtin.template:
+    src: ../files/compose/museum.yaml
+    dest: /home/pi/docker/ente/server/config/museum.yaml
+    owner: pi
+    group: pi
+    mode: '0644'
+
+- name: create ente data directory
+  ansible.builtin.file:
+    path: /home/pi/docker/ente/server/config/data
+    state: directory
+    owner: pi
+    group: pi
+    mode: '0755'
+
+- name: start ente
+  community.docker.docker_compose_v2:
+    project_src: /home/pi/docker/ente/server/config
+    files:
+      - compose.yaml
+    state: present
+
+# start uptime-kuma after ente, needs config_default network
+- name: start uptime-kuma
+  community.docker.docker_compose_v2:
+    project_src: /home/pi/docker/uptime-kuma
+    files:
+      - compose.yaml
+    state: present

@@ -1,0 +1,15 @@
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:2
+    restart: unless-stopped
+    volumes:
+      - ./data:/app/data
+    ports:
+      # <Host Port>:<Container Port>
+      - "192.168.178.144:4500:3001"
+    networks:
+      - default
+      - config_default
+networks:
+   config_default:
+     external: true
