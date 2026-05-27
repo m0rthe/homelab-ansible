@@ -1,0 +1,70 @@
+# shutdown all hosts gracefully
+# Order: VMs first, then Proxmox host, then Pi 5, then Pi Zero
+
+- name: shutdown proxmox vms
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../group_vars/all/vault.yml
+  tasks:
+    - name: shutdown homeassistant vm
+      community.proxmox.proxmox_kvm:
+        api_host: 192.168.178.147
+        api_user: root@pam
+        api_token_id: ansible
+        api_token_secret: "{{ proxmox_api_token }}"
+        node: nuc
+        vmid: 101
+        state: stopped
+        force: false
+
+    - name: shutdown teamspeak vm
+      community.proxmox.proxmox_kvm:
+        api_host: 192.168.178.147
+        api_user: root@pam
+        api_token_id: ansible
+        api_token_secret: "{{ proxmox_api_token }}"
+        node: nuc
+        vmid: 100
+        state: stopped
+        force: false
+
+- name: wait for vms to shutdown
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: wait 30 seconds
+      ansible.builtin.pause:
+        seconds: 30
+
+- name: shutdown nuc
+  hosts: proxmox
+  become: true
+  tasks:
+    - name: shutdown nuc gracefully
+      ansible.builtin.command:
+        cmd: shutdown -h now
+
+- name: wait for nuc to shutdown
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: wait 30 seconds
+      ansible.builtin.pause:
+        seconds: 30
+
+- name: shutdown pi5
+  hosts: raspberry
+  become: true
+  tasks:
+    - name: shutdown pi5 gracefully
+      ansible.builtin.command:
+        cmd: shutdown -h now
+
+- name: shutdown pizero
+  hosts: pizero
+  become: true
+  tasks:
+    - name: shutdown pizero gracefully
+      ansible.builtin.command:
+        cmd: shutdown -h now
