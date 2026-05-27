@@ -15,3 +15,5 @@ jobs:
 
       - name: Run ansible-lint
         run: ansible-lint playbooks/ tasks/
+        env:
+          ANSIBLE_VAULT_PASSWORD_FILE: /dev/null

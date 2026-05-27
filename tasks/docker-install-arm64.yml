@@ -1,11 +1,11 @@
 # install docker
-- name: install ca-certificate and curl
+- name: Install ca-certificate and curl
   ansible.builtin.apt:
     pkg:
       - ca-certificates
       - curl
 
-- name: create folder for keyring
+- name: Create folder for keyring
   ansible.builtin.file:
     path: /etc/apt/keyrings
     state: directory
@@ -13,13 +13,13 @@
     owner: root
     group: root
 
-- name: install gpg key
+- name: Install gpg key
   ansible.builtin.get_url:
     url: https://download.docker.com/linux/debian/gpg
     dest: /etc/apt/keyrings/docker.asc
-    mode: "0644"
+    mode: "0755"
 
-- name: add docker repository
+- name: Add docker repository
   ansible.builtin.copy:
     content: |
       Types: deb
@@ -30,11 +30,11 @@
       Signed-By: /etc/apt/keyrings/docker.asc
     dest: /etc/apt/sources.list.d/docker.sources
 
-- name: apt update after adding docker repo
+- name: Apt update after adding docker repo
   ansible.builtin.apt:
     update_cache: yes
 
-- name: install docker packages
+- name: Install docker packages
   ansible.builtin.apt:
     pkg:
       - docker-ce
@@ -43,25 +43,25 @@
       - docker-buildx-plugin
       - docker-compose-plugin
 
-- name: enable and start docker
+- name: Enable and start docker
   ansible.builtin.systemd_service:
     name: docker
     state: started
     enabled: true
 
-- name: add pi user to docker group
+- name: Add pi user to docker group
   ansible.builtin.user:
     name: pi
     groups: docker
     append: yes
 
-- name: verify docker with hello-world
+- name: Verify docker with hello-world
   ansible.builtin.command:
     cmd: docker run hello-world
   register: hello_world_output
   changed_when: false
   become_user: pi
 
-- name: show hello-world output
+- name: Show hello-world output
   ansible.builtin.debug:
     var: hello_world_output.stdout

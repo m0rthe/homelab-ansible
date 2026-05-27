@@ -38,7 +38,7 @@
 # copy compose files
 - name: Copy nextcloud compose file
   ansible.builtin.template:
-    src: ../files/compose/nextcloud.yml
+    src: files/compose/nextcloud.yml
     dest: /home/pi/docker/nextcloud/docker-compose.yml
     owner: pi
     group: pi
@@ -46,7 +46,7 @@
 
 - name: Copy ntfy compose file
   ansible.builtin.copy:
-    src: ../files/compose/ntfy.yml
+    src: files/compose/ntfy.yml
     dest: /home/pi/docker/ntfy/docker-compose.yml
     owner: pi
     group: pi
@@ -54,7 +54,7 @@
 
 - name: Copy onlyoffice compose file
   ansible.builtin.template:
-    src: ../files/compose/onlyoffice.yml
+    src: files/compose/onlyoffice.yml
     dest: /home/pi/docker/onlyoffice/Docker-DocumentServer-Arm64/docker-compose.yml
     owner: pi
     group: pi
@@ -62,7 +62,7 @@
 
 - name: Copy uptime-kuma compose file
   ansible.builtin.copy:
-    src: ../files/compose/uptime-kuma.yml
+    src: files/compose/uptime-kuma.yml
     dest: /home/pi/docker/uptime-kuma/compose.yaml
     owner: pi
     group: pi
@@ -122,7 +122,7 @@
 
 - name: Copy ente compose file
   ansible.builtin.copy:
-    src: ../files/compose/ente.yml
+    src: files/compose/ente.yml
     dest: /home/pi/docker/ente/server/config/compose.yaml
     owner: pi
     group: pi
@@ -130,7 +130,7 @@
 
 - name: Copy ente .env file
   ansible.builtin.template:
-    src: ../files/compose/ente.env
+    src: files/compose/ente.env
     dest: /home/pi/docker/ente/server/config/.env
     owner: pi
     group: pi
@@ -138,7 +138,7 @@
 
 - name: Copy museum.yaml
   ansible.builtin.template:
-    src: ../files/compose/museum.yaml
+    src: files/compose/museum.yaml
     dest: /home/pi/docker/ente/server/config/museum.yaml
     owner: pi
     group: pi
@@ -166,3 +166,4 @@
     files:
       - compose.yaml
     state: present
+    
