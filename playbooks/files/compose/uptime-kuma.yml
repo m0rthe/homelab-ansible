@@ -11,5 +11,5 @@ services:
       - default
       - config_default
 networks:
-   config_default:
-     external: true
+  config_default:
+    external: true

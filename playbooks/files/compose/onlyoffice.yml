@@ -18,7 +18,7 @@ services:
       - JWT_HEADER=Authorization
       - JWT_IN_BODY=true
       # Uncomment the line below to set larger file limits (about 1GB)
-      #- LARGER_FILE_LIMITS=true
+      # - LARGER_FILE_LIMITS=true
     ports:
       - "127.0.0.1:8081:80"
       - "127.0.0.1:8443:443"
@@ -26,15 +26,15 @@ services:
     restart: always
     stop_grace_period: 120s
     volumes:
-       # Uncomment the line below to get access to the slide themes directory.
-       # To use the themes, copy them to the slideThemes directory and run `docker exec -it <container-name> /usr/bin/documentserver-generate-allfonts.sh`
-       #- ./slideThemes:/var/www/onlyoffice/documentserver/sdkjs/slide/themes/src
-       - /var/www/onlyoffice/Data
-       - /var/log/onlyoffice
-       - /var/lib/onlyoffice/documentserver/App_Data/cache/files
-       - /var/www/onlyoffice/documentserver-example/public/files
-       - /usr/share/fonts
-       
+      # Uncomment the line below to get access to the slide themes directory.
+      # To use the themes, copy them to the slideThemes directory and run `docker exec -it <container-name> /usr/bin/documentserver-generate-allfonts.sh`
+      # - ./slideThemes:/var/www/onlyoffice/documentserver/sdkjs/slide/themes/src
+      - /var/www/onlyoffice/Data
+      - /var/log/onlyoffice
+      - /var/lib/onlyoffice/documentserver/App_Data/cache/files
+      - /var/www/onlyoffice/documentserver-example/public/files
+      - /usr/share/fonts
+
   onlyoffice-rabbitmq:
     container_name: onlyoffice-rabbitmq
     image: rabbitmq:3.12
