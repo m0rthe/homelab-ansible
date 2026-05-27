@@ -1,0 +1,29 @@
+# WireGuard
+wireguard_config: |
+  [Interface]
+  Address = 10.8.0.1/24
+  ListenPort = 51820
+  PrivateKey = ""
+  PostUp = iptables ...
+  PostDown = iptables ...
+
+  [Peer]
+  PublicKey = ""
+  AllowedIPs = 10.8.0.2/32
+
+# Nextcloud
+nextcloud_mysql_root_password: ""
+nextcloud_mysql_password: ""
+
+# OnlyOffice
+onlyoffice_jwt_secret: ""
+
+# Ente
+ente_postgres_password: ""
+ente_minio_root_password: ""
+ente_encryption_key: ""
+ente_hash_key: ""
+ente_jwt_secret: ""
+
+# Proxmox
+proxmox_api_token: ""
