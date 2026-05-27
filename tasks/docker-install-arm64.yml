@@ -17,6 +17,8 @@
   ansible.builtin.get_url:
     url: https://download.docker.com/linux/debian/gpg
     dest: /etc/apt/keyrings/docker.asc
+    owner: root
+    group: root
     mode: "0755"
 
 - name: Add docker repository
@@ -32,7 +34,7 @@
 
 - name: Apt update after adding docker repo
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
 
 - name: Install docker packages
   ansible.builtin.apt:

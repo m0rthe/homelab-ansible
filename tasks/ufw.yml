@@ -1,103 +1,103 @@
 # configure ufw ports
-- name: deny other ufw ports
+- name: Deny other ufw ports
   community.general.ufw:
     default: deny
 
-- name: allow ssh for port 2222 | local
+- name: Allow ssh for port 2222 | local
   community.general.ufw:
     rule: allow
     port: "2222"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow wireguard vpn 51820
+- name: Allow wireguard vpn 51820
   community.general.ufw:
     rule: allow
     port: "51820"
     proto: udp
 
-- name: allow nginx port 80 | local
+- name: Allow nginx port 80 | local
   community.general.ufw:
     rule: allow
     port: "80"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow nextcloud port 8080 | local
+- name: Allow nextcloud port 8080 | local
   community.general.ufw:
     rule: allow
     port: "8080"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow ente museum port 8083 | local
+- name: Allow ente museum port 8083 | local
   community.general.ufw:
     rule: allow
     port: "8083"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow ente web ports 3101-3107 | local
+- name: Allow ente web ports 3101-3107 | local
   community.general.ufw:
     rule: allow
     port: "3101:3107"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow ntfy port 8090 | local
+- name: Allow ntfy port 8090 | local
   community.general.ufw:
     rule: allow
     port: "8090"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow onlyoffice port 8081 | local
+- name: Allow onlyoffice port 8081 | local
   community.general.ufw:
     rule: allow
     port: "8081"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow onlyoffice port 8443 | local
+- name: Allow onlyoffice port 8443 | local
   community.general.ufw:
     rule: allow
     port: "8443"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow portainer port 9443 | local
+- name: Allow portainer port 9443 | local
   community.general.ufw:
     rule: allow
     port: "9443"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow portainer port 8000 | local
+- name: Allow portainer port 8000 | local
   community.general.ufw:
     rule: allow
     port: "8000"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow uptime kuma port 4500 | local
+- name: Allow uptime kuma port 4500 | local
   community.general.ufw:
     rule: allow
     port: "4500"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow minio port 3200 | local
+- name: Allow minio port 3200 | local
   community.general.ufw:
     rule: allow
     port: "3200"
     src: 192.168.178.0/24
     proto: tcp
 
-- name: allow all from vpn network
+- name: Allow all from vpn network
   community.general.ufw:
     rule: allow
     src: 10.8.0.0/24
 
-- name: enable ufw
+- name: Enable ufw
   community.general.ufw:
     state: enabled
