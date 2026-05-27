@@ -1,5 +1,5 @@
 # create docker directories
-- name: create nextcloud directory
+- name: Create nextcloud directory
   ansible.builtin.file:
     path: /home/pi/docker/nextcloud
     state: directory
@@ -7,7 +7,7 @@
     group: pi
     mode: '0755'
 
-- name: create ntfy directories
+- name: Create ntfy directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -19,7 +19,7 @@
     - /home/pi/docker/ntfy/cache
     - /home/pi/docker/ntfy/config
 
-- name: create onlyoffice directory
+- name: Create onlyoffice directory
   ansible.builtin.file:
     path: /home/pi/docker/onlyoffice/Docker-DocumentServer-Arm64
     state: directory
@@ -27,7 +27,7 @@
     group: pi
     mode: '0755'
 
-- name: create uptime-kuma directory
+- name: Create uptime-kuma directory
   ansible.builtin.file:
     path: /home/pi/docker/uptime-kuma
     state: directory
@@ -36,7 +36,7 @@
     mode: '0755'
 
 # copy compose files
-- name: copy nextcloud compose file
+- name: Copy nextcloud compose file
   ansible.builtin.template:
     src: ../files/compose/nextcloud.yml
     dest: /home/pi/docker/nextcloud/docker-compose.yml
@@ -44,7 +44,7 @@
     group: pi
     mode: '0644'
 
-- name: copy ntfy compose file
+- name: Copy ntfy compose file
   ansible.builtin.copy:
     src: ../files/compose/ntfy.yml
     dest: /home/pi/docker/ntfy/docker-compose.yml
@@ -52,7 +52,7 @@
     group: pi
     mode: '0644'
 
-- name: copy onlyoffice compose file
+- name: Copy onlyoffice compose file
   ansible.builtin.template:
     src: ../files/compose/onlyoffice.yml
     dest: /home/pi/docker/onlyoffice/Docker-DocumentServer-Arm64/docker-compose.yml
@@ -60,7 +60,7 @@
     group: pi
     mode: '0644'
 
-- name: copy uptime-kuma compose file
+- name: Copy uptime-kuma compose file
   ansible.builtin.copy:
     src: ../files/compose/uptime-kuma.yml
     dest: /home/pi/docker/uptime-kuma/compose.yaml
@@ -69,11 +69,11 @@
     mode: '0644'
 
 # deploy portainer
-- name: create portainer volume
+- name: Create portainer volume
   community.docker.docker_volume:
     name: portainer_data
 
-- name: deploy portainer
+- name: Deploy portainer
   community.docker.docker_container:
     name: portainer
     image: portainer/portainer-ce:lts
@@ -86,21 +86,21 @@
       - portainer_data:/data
 
 # start containers with docker compose
-- name: start nextcloud
+- name: Start nextcloud
   community.docker.docker_compose_v2:
     project_src: /home/pi/docker/nextcloud
     files:
       - docker-compose.yml
     state: present
 
-- name: start ntfy
+- name: Start ntfy
   community.docker.docker_compose_v2:
     project_src: /home/pi/docker/ntfy
     files:
       - docker-compose.yml
     state: present
 
-- name: start onlyoffice
+- name: Start onlyoffice
   community.docker.docker_compose_v2:
     project_src: /home/pi/docker/onlyoffice/Docker-DocumentServer-Arm64
     files:
@@ -108,19 +108,19 @@
     state: present
 
 # deploy ente first, creates config_default network needed by uptime-kuma
-- name: install git
+- name: Install git
   ansible.builtin.apt:
     name: git
     state: present
 
-- name: clone ente repository
+- name: Clone ente repository
   ansible.builtin.git:
     repo: https://github.com/ente-io/ente.git
     dest: /home/pi/docker/ente
     version: main
     update: false
 
-- name: copy ente compose file
+- name: Copy ente compose file
   ansible.builtin.copy:
     src: ../files/compose/ente.yml
     dest: /home/pi/docker/ente/server/config/compose.yaml
@@ -128,7 +128,7 @@
     group: pi
     mode: '0644'
 
-- name: copy ente .env file
+- name: Copy ente .env file
   ansible.builtin.template:
     src: ../files/compose/ente.env
     dest: /home/pi/docker/ente/server/config/.env
@@ -136,7 +136,7 @@
     group: pi
     mode: '0600'
 
-- name: copy museum.yaml
+- name: Copy museum.yaml
   ansible.builtin.template:
     src: ../files/compose/museum.yaml
     dest: /home/pi/docker/ente/server/config/museum.yaml
@@ -144,7 +144,7 @@
     group: pi
     mode: '0644'
 
-- name: create ente data directory
+- name: Create ente data directory
   ansible.builtin.file:
     path: /home/pi/docker/ente/server/config/data
     state: directory
@@ -152,7 +152,7 @@
     group: pi
     mode: '0755'
 
-- name: start ente
+- name: Start ente
   community.docker.docker_compose_v2:
     project_src: /home/pi/docker/ente/server/config
     files:
@@ -160,7 +160,7 @@
     state: present
 
 # start uptime-kuma after ente, needs config_default network
-- name: start uptime-kuma
+- name: Start uptime-kuma
   community.docker.docker_compose_v2:
     project_src: /home/pi/docker/uptime-kuma
     files:
