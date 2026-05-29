@@ -1,0 +1,83 @@
+# create-teamspeak-vm.yml
+- name: Create and configure teamspeak VM
+  hosts: localhost
+  gather_facts: false
+  vars_files:
+    - ../group_vars/all/vault.yml
+  vars:
+    vm_id: 102
+  tasks:
+
+    - name: Clone teamspeak VM from template
+      community.proxmox.proxmox_kvm:
+        api_host: 192.168.178.147
+        api_user: root@pam
+        api_token_id: ansible
+        api_token_secret: "{{ proxmox_api_token }}"
+        node: nuc
+        name: teamspeak-new
+        clone: debian-cloud-template
+        vmid: 9000
+        newid: "{{ vm_id }}"
+        full: true
+        memory: 2048
+        cores: 1
+        storage: local-lvm
+        state: present
+
+    - name: Set Cloud-Init config
+      community.proxmox.proxmox_kvm:
+        api_host: 192.168.178.147
+        api_user: root@pam
+        api_token_id: ansible
+        api_token_secret: "{{ proxmox_api_token }}"
+        node: nuc
+        vmid: "{{ vm_id }}"
+        ciuser: teamspeak
+        cipassword: "{{ vm_password }}"
+        sshkeys: "{{ lookup('file', '~/.ssh/id_ed25519.pub') }}"
+        nameservers: 192.168.178.1
+        ipconfig:
+          ipconfig0: "ip=dhcp"
+        update: true
+
+    - name: Resize disk to 10GB
+      community.proxmox.proxmox_disk:
+        api_host: 192.168.178.147
+        api_user: root@pam
+        api_token_id: ansible
+        api_token_secret: "{{ proxmox_api_token }}"
+        vmid: "{{ vm_id }}"
+        disk: scsi0
+        size: 10G
+        state: resized
+
+    - name: Start teamspeak VM
+      community.proxmox.proxmox_kvm:
+        api_host: 192.168.178.147
+        api_user: root@pam
+        api_token_id: ansible
+        api_token_secret: "{{ proxmox_api_token }}"
+        node: nuc
+        vmid: "{{ vm_id }}"
+        state: started
+
+    - name: Wait for VM to boot
+      ansible.builtin.pause:
+        seconds: 30
+
+    - name: Get VM info
+      community.proxmox.proxmox_kvm:
+        api_host: 192.168.178.147
+        api_user: root@pam
+        api_token_id: ansible
+        api_token_secret: "{{ proxmox_api_token }}"
+        node: nuc
+        vmid: "{{ vm_id }}"
+        state: current
+      register: vm_info
+
+    - name: Show VM info
+      ansible.builtin.debug:
+        var: vm_info
+    # next steps to be continued ...
