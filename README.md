@@ -38,3 +38,8 @@ ansible-playbook -i inventory/hosts.yml playbooks/shutdown-all.yml
 ## Note
 
 Sensitive values like passwords and keys are stored encrypted with Ansible Vault
+
+## Credits
+
+- [Ansible Documentation](https://docs.ansible.com)
+- [Docker Documentation](https://docs.docker.com)
