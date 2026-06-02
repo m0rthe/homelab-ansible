@@ -78,7 +78,7 @@
 
 - name: Copy monitoring compose file
   ansible.builtin.copy:
-    src: files/compose/monitoring-compose.yaml
+    src: files/compose/monitoring.yaml
     dest: /home/pi/docker/monitoring/compose.yaml
     owner: pi
     group: pi
