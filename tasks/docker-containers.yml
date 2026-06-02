@@ -35,6 +35,14 @@
     group: pi
     mode: '0755'
 
+- name: Create monitoring directory
+  ansible.builtin.file:
+    path: /home/pi/docker/monitoring
+    state: directory
+    owner: pi
+    group: pi
+    mode: '0755'
+
 # copy compose files
 - name: Copy nextcloud compose file
   ansible.builtin.template:
@@ -64,6 +72,22 @@
   ansible.builtin.copy:
     src: files/compose/uptime-kuma.yml
     dest: /home/pi/docker/uptime-kuma/compose.yaml
+    owner: pi
+    group: pi
+    mode: '0644'
+
+- name: Copy monitoring compose file
+  ansible.builtin.copy:
+    src: files/compose/monitoring-compose.yaml
+    dest: /home/pi/docker/monitoring/compose.yaml
+    owner: pi
+    group: pi
+    mode: '0644'
+
+- name: Copy telegraf config
+  ansible.builtin.template:
+    src: files/compose/telegraf.conf
+    dest: /home/pi/docker/monitoring/telegraf.conf
     owner: pi
     group: pi
     mode: '0644'
@@ -105,6 +129,13 @@
     project_src: /home/pi/docker/onlyoffice/Docker-DocumentServer-Arm64
     files:
       - docker-compose.yml
+    state: present
+
+- name: Start monitoring stack
+  community.docker.docker_compose_v2:
+    project_src: /home/pi/docker/monitoring
+    files:
+      - compose.yaml
     state: present
 
 # deploy ente first, creates config_default network needed by uptime-kuma
