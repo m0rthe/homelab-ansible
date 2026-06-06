@@ -27,3 +27,6 @@ ente_jwt_secret: ""
 
 # Proxmox
 proxmox_api_token: ""
+
+# influx_db password
+influxdb_token: ""
