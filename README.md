@@ -3,7 +3,7 @@
 Ansible playbooks to set up and maintain my homelab
 
 ![My Homelab](assets/homelab.jpg)
-*Raspberry Pi 5, Intel NUC 10, and TP-Link switch - more to follow when the budget allows*
+*Since January 2026. Raspberry Pi 5, Intel NUC 10, and TP-Link switch - more to follow when the budget allows*
 
 ## What's running
 
